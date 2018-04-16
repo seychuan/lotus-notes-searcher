@@ -11,8 +11,6 @@ namespace LotusNotesReader
         [STAThread]
         static void Main()
         {
-            //if (DateTime.Now.Ticks > 636983136000000000) return; // 2019-07-10
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
