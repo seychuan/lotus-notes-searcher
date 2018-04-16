@@ -1,6 +1,7 @@
 ﻿using Domino;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -44,6 +45,8 @@ namespace LotusNotesReader
 
         private async void btnSearch_Click(object sender, EventArgs e)
         {
+            var startTime = DateTime.Now;
+
             UpdateText(lblStatus, "Searching...");
 
             try
@@ -52,6 +55,7 @@ namespace LotusNotesReader
                 btnSearch.Enabled = false;
                 txtSearch.Enabled = false;
                 cboView.Enabled = false;
+                rtbOutput.Enabled = false;
 
                 rtbOutput.Clear();
 
@@ -74,17 +78,35 @@ namespace LotusNotesReader
 
                     var output = await ProcessNotesView(view, searchText);
 
-                    foreach(string value in output.Values)
+                    try
                     {
-                        if (string.IsNullOrEmpty(value) == false && value.Trim().Length > 0)
+                        var path = DateTime.Now.ToString("yyMMddHHmmssffffff") + ".log";
+
+                        using (StreamWriter sw = new StreamWriter(path))
                         {
-                            rtbOutput.Text += value + Environment.NewLine + Environment.NewLine;
-                            Application.DoEvents();
+                            foreach (string value in output.Values)
+                            {
+                                if (string.IsNullOrEmpty(value) == false && value.Trim().Length > 0)
+                                {
+                                    sw.WriteLine(value + Environment.NewLine + Environment.NewLine);
+
+                                    rtbOutput.Text += value + Environment.NewLine + Environment.NewLine;
+                                    Application.DoEvents();
+                                }
+                            }
+
+                            sw.Close();
                         }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
                     }
 
                     output.Clear();
                 }
+
+                var endTime = DateTime.Now;
 
                 MessageBox.Show("Search Completed.");
             }
@@ -98,6 +120,7 @@ namespace LotusNotesReader
                 btnSearch.Enabled = true;
                 txtSearch.Enabled = true;
                 cboView.Enabled = true;
+                rtbOutput.Enabled = true;
 
                 UpdateText(lblStatus, "Search Completed!");
             }
