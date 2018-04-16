@@ -48,6 +48,12 @@
             this.lblNotesEntryCount = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.lblStatus = new System.Windows.Forms.Label();
+            this.lblStartTime = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.lblEndTime = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.lblElapsedTime = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnSearch
@@ -230,11 +236,71 @@
             this.lblStatus.TabIndex = 18;
             this.lblStatus.Text = "...";
             // 
+            // lblStartTime
+            // 
+            this.lblStartTime.AutoSize = true;
+            this.lblStartTime.Location = new System.Drawing.Point(359, 71);
+            this.lblStartTime.Name = "lblStartTime";
+            this.lblStartTime.Size = new System.Drawing.Size(37, 13);
+            this.lblStartTime.TabIndex = 20;
+            this.lblStartTime.Text = "00000";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(279, 71);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(58, 13);
+            this.label2.TabIndex = 19;
+            this.label2.Text = "Start Time:";
+            // 
+            // lblEndTime
+            // 
+            this.lblEndTime.AutoSize = true;
+            this.lblEndTime.Location = new System.Drawing.Point(359, 93);
+            this.lblEndTime.Name = "lblEndTime";
+            this.lblEndTime.Size = new System.Drawing.Size(37, 13);
+            this.lblEndTime.TabIndex = 22;
+            this.lblEndTime.Text = "00000";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(279, 93);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(55, 13);
+            this.label5.TabIndex = 21;
+            this.label5.Text = "End Time:";
+            // 
+            // lblElapsedTime
+            // 
+            this.lblElapsedTime.AutoSize = true;
+            this.lblElapsedTime.Location = new System.Drawing.Point(359, 115);
+            this.lblElapsedTime.Name = "lblElapsedTime";
+            this.lblElapsedTime.Size = new System.Drawing.Size(37, 13);
+            this.lblElapsedTime.TabIndex = 24;
+            this.lblElapsedTime.Text = "00000";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(279, 115);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(74, 13);
+            this.label6.TabIndex = 23;
+            this.label6.Text = "Elapsed Time:";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(549, 328);
+            this.Controls.Add(this.lblElapsedTime);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.lblEndTime);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.lblStartTime);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.lblStatus);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.lblNotesEntryTotal);
@@ -284,6 +350,12 @@
         private System.Windows.Forms.Label lblNotesEntryCount;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.Label lblStartTime;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lblEndTime;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label lblElapsedTime;
+        private System.Windows.Forms.Label label6;
     }
 }
 

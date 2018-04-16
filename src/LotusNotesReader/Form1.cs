@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace LotusNotesReader
@@ -40,12 +39,17 @@ namespace LotusNotesReader
                 }
             }
 
-            if (cboView.Items.Count > 0) cboView.SelectedIndex = 0;
+            if (cboView.Items.Count > 0)
+            {
+                cboView.Items.Insert(0, "--All--");
+                cboView.SelectedIndex = 0;
+            }
         }
 
-        private async void btnSearch_Click(object sender, EventArgs e)
+        private void btnSearch_Click(object sender, EventArgs e)
         {
             var startTime = DateTime.Now;
+            UpdateText(lblStartTime, startTime.ToString("yyyy-MM-dd HH:mm:ss.ffffff"));
 
             UpdateText(lblStatus, "Searching...");
 
@@ -66,47 +70,55 @@ namespace LotusNotesReader
                 }
 
                 string searchText = txtSearch.Text.ToLower();
+                string path = DateTime.Now.ToString("yyMMddHHmmssffffff") + "-{0}.log";
 
                 foreach (NotesView view in GetNotesView(db))
                 {
                     if (view == null) continue;
 
-                    if (cboView.SelectedIndex >= 0)
+                    if (cboView.SelectedIndex > 0)
                     {
                         if (view.Name != cboView.SelectedItem.ToString()) continue;
                     }
 
-                    var output = await ProcessNotesView(view, searchText);
+                    var output = ProcessNotesView(view, searchText);
 
-                    try
+                    if (output != null && output.Count > 0)
                     {
-                        var path = DateTime.Now.ToString("yyMMddHHmmssffffff") + ".log";
-
-                        using (StreamWriter sw = new StreamWriter(path))
+                        try
                         {
-                            foreach (string value in output.Values)
+                            AppendText(rtbOutput, ">>> " + view.Name + " <<<" + Environment.NewLine + Environment.NewLine);
+
+                            using (StreamWriter sw = new StreamWriter(string.Format(path, view.Name)))
                             {
-                                if (string.IsNullOrEmpty(value) == false && value.Trim().Length > 0)
+                                foreach (string value in output.Values)
                                 {
-                                    sw.WriteLine(value + Environment.NewLine + Environment.NewLine);
+                                    if (string.IsNullOrEmpty(value) == false && value.Trim().Length > 0)
+                                    {
+                                        sw.WriteLine(value + Environment.NewLine + Environment.NewLine);
 
-                                    rtbOutput.Text += value + Environment.NewLine + Environment.NewLine;
-                                    Application.DoEvents();
+                                        AppendText(rtbOutput, value + Environment.NewLine + Environment.NewLine);
+                                        //Application.DoEvents();
+                                    }
                                 }
+
+                                sw.Close();
                             }
-
-                            sw.Close();
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                    }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
 
-                    output.Clear();
+                        output.Clear();
+                    }
                 }
 
                 var endTime = DateTime.Now;
+                UpdateText(lblEndTime, endTime.ToString("yyyy-MM-dd HH:mm:ss.ffffff"));
+
+                var elapsedTime = new DateTime((endTime - startTime).Ticks);
+                UpdateText(lblElapsedTime, string.Format("{0:HH}H {0:mm}M {0:ss}.{0:ffffff}S", elapsedTime));
 
                 MessageBox.Show("Search Completed.");
             }
@@ -126,21 +138,21 @@ namespace LotusNotesReader
             }
         }
 
-        private async Task<Dictionary<string, string>> ProcessNotesView(NotesView notesView, string searchText)
+        private Dictionary<string, string> ProcessNotesView(NotesView notesView, string searchText)
         {
             Dictionary<string, string> entryOutput = new Dictionary<string, string>();
 
             foreach (var entry in GetNotesViewEntry(notesView))
             {
-                Application.DoEvents();
+                //Application.DoEvents();
 
                 if (entry == null) continue;
 
                 // Skip the entry if already processed
                 if (entryOutput.ContainsKey(entry.UniversalID)) continue;
 
-                await Task.Run(() => entryOutput.Add(entry.UniversalID, ProcessNotesViewEntry(entry, searchText)));
-                Application.DoEvents();
+                entryOutput.Add(entry.UniversalID, ProcessNotesViewEntry(entry, searchText));
+                //Application.DoEvents();
             }
 
             return entryOutput;
@@ -201,24 +213,24 @@ namespace LotusNotesReader
         }
 
 
-        private IEnumerable<NotesDocument> GetNotesDocument(NotesDatabase db)
-        {
-            UpdateText(lblStatus, "Get Notes Documents...");
+        //private IEnumerable<NotesDocument> GetNotesDocument(NotesDatabase db)
+        //{
+        //    UpdateText(lblStatus, "Get Notes Documents...");
 
-            NotesDocumentCollection col = db.AllDocuments;
-            NotesDocument doc = col.GetFirstDocument();
+        //    NotesDocumentCollection col = db.AllDocuments;
+        //    NotesDocument doc = col.GetFirstDocument();
 
-            while (doc != null)
-            {
-                yield return doc;
+        //    while (doc != null)
+        //    {
+        //        yield return doc;
 
-                doc = col.GetNextDocument(doc);
-            }
+        //        doc = col.GetNextDocument(doc);
+        //    }
 
-            UpdateText(lblStatus, "Get Notes Documents Completed.");
+        //    UpdateText(lblStatus, "Get Notes Documents Completed.");
 
-            yield return null;
-        }
+        //    yield return null;
+        //}
 
         private IEnumerable<NotesView> GetNotesView(NotesDatabase db)
         {
@@ -237,7 +249,7 @@ namespace LotusNotesReader
 
                 index++;
 
-                Application.DoEvents();
+                //Application.DoEvents();
             }
 
             UpdateText(lblStatus, "Get Notes Views Completed.");
@@ -260,7 +272,7 @@ namespace LotusNotesReader
                 NotesViewEntry entry = col.GetNthEntry(index);
                 yield return entry;
 
-                Application.DoEvents();
+                //Application.DoEvents();
             }
 
             UpdateText(lblStatus, "Get Notes Entries Completed.");
@@ -283,7 +295,7 @@ namespace LotusNotesReader
                 NotesItem item = (NotesItem)itemArray.GetValue(index);
                 yield return item;
 
-                Application.DoEvents();
+                //Application.DoEvents();
             }
 
             UpdateText(lblStatus, "Get Notes Items Completed.");
@@ -316,6 +328,18 @@ namespace LotusNotesReader
             }
 
             control.Text = value;
+            Application.DoEvents();
+        }
+
+        private void AppendText(Control control, string value)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action<Control, string>(UpdateText), new object[] { control, value });
+                return;
+            }
+
+            control.Text += value;
             Application.DoEvents();
         }
     }
