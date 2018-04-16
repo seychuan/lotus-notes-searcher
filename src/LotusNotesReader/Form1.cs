@@ -9,7 +9,8 @@ namespace LotusNotesReader
 {
     public partial class Form1 : Form
     {
-        NotesDatabase db = null;
+        NotesDatabase _db = null;
+        List<string> _universalIDList = new List<string>();
 
         public Form1()
         {
@@ -26,9 +27,9 @@ namespace LotusNotesReader
             NotesSession session = new NotesSession();
             session.Initialize("");
 
-            db = session.GetDatabase("", txtNsfFilePath.Text, false);
+            _db = session.GetDatabase("", txtNsfFilePath.Text, false);
 
-            foreach (NotesView view in GetNotesView(db))
+            foreach (NotesView view in GetNotesView(_db))
             {
                 if (view != null)
                 {
@@ -63,6 +64,8 @@ namespace LotusNotesReader
 
                 rtbOutput.Clear();
 
+                _universalIDList.Clear();
+
                 if (txtNsfFilePath.Text.Trim() == string.Empty)
                 {
                     MessageBox.Show("Please select a nsf file");
@@ -72,7 +75,7 @@ namespace LotusNotesReader
                 string searchText = txtSearch.Text.ToLower();
                 string path = DateTime.Now.ToString("yyMMddHHmmssffffff") + "-{0}.log";
 
-                foreach (NotesView view in GetNotesView(db))
+                foreach (NotesView view in GetNotesView(_db))
                 {
                     if (view == null) continue;
 
@@ -87,7 +90,7 @@ namespace LotusNotesReader
                     {
                         try
                         {
-                            AppendText(rtbOutput, ">>> " + view.Name + " <<<" + Environment.NewLine + Environment.NewLine);
+                            AppendText(rtbOutput, $">>> {view.Name} ({output.Count}) <<<" + Environment.NewLine + Environment.NewLine);
 
                             using (StreamWriter sw = new StreamWriter(string.Format(path, view.Name)))
                             {
@@ -149,10 +152,18 @@ namespace LotusNotesReader
                 if (entry == null) continue;
 
                 // Skip the entry if already processed
-                if (entryOutput.ContainsKey(entry.UniversalID)) continue;
+                if (_universalIDList.Contains(entry.UniversalID)) continue;
+                //if (entryOutput.ContainsKey(entry.UniversalID)) continue;
 
-                entryOutput.Add(entry.UniversalID, ProcessNotesViewEntry(entry, searchText));
-                //Application.DoEvents();
+                var entryContent = ProcessNotesViewEntry(entry, searchText);
+
+                if (string.IsNullOrEmpty(entryContent) == false && entryContent.Trim().Length > 0)
+                {
+                    _universalIDList.Add(entry.UniversalID);
+
+                    entryOutput.Add(entry.UniversalID, entryContent);
+                    //Application.DoEvents();
+                }
             }
 
             return entryOutput;
@@ -234,73 +245,82 @@ namespace LotusNotesReader
 
         private IEnumerable<NotesView> GetNotesView(NotesDatabase db)
         {
-            UpdateText(lblStatus, "Get Notes Views...");
-
             var viewList = (object[])db.Views;
             long index = 1;
 
-            UpdateText(lblNotesViewTotal, viewList.LongLength.ToString());
-
-            foreach (var view in viewList)
+            if (viewList.LongLength > 0)
             {
-                UpdateText(lblNotesViewCount, index.ToString());
+                UpdateText(lblStatus, "Get Notes Views...");
 
-                yield return (NotesView)view;
+                UpdateText(lblNotesViewTotal, viewList.LongLength.ToString());
 
-                index++;
+                foreach (var view in viewList)
+                {
+                    UpdateText(lblNotesViewCount, index.ToString());
 
-                //Application.DoEvents();
+                    yield return (NotesView)view;
+
+                    index++;
+
+                    UpdateText(lblStatus, "Get Next Notes Views...");
+
+                    //Application.DoEvents();
+                }
+
+                UpdateText(lblStatus, "Get Notes Views Completed.");
             }
-
-            UpdateText(lblStatus, "Get Notes Views Completed.");
-
-            yield return null;
         }
 
         private IEnumerable<NotesViewEntry> GetNotesViewEntry(NotesView nv)
         {
-            UpdateText(lblStatus, "Get Notes Entries...");
-
             NotesViewEntryCollection col = nv.AllEntries;
 
-            UpdateText(lblNotesEntryTotal, col.Count.ToString());
-
-            for (int index = 1; index <= col.Count; index++)
+            if (col.Count > 0)
             {
-                UpdateText(lblNotesEntryCount, index.ToString());
+                UpdateText(lblStatus, "Get Notes Entries...");
 
-                NotesViewEntry entry = col.GetNthEntry(index);
-                yield return entry;
+                UpdateText(lblNotesEntryTotal, col.Count.ToString());
 
-                //Application.DoEvents();
+                for (int index = 1; index <= col.Count; index++)
+                {
+                    UpdateText(lblNotesEntryCount, index.ToString());
+
+                    NotesViewEntry entry = col.GetNthEntry(index);
+                    yield return entry;
+
+                    UpdateText(lblStatus, "Get Next Notes Entries...");
+
+                    //Application.DoEvents();
+                }
+
+                UpdateText(lblStatus, "Get Notes Entries Completed.");
             }
-
-            UpdateText(lblStatus, "Get Notes Entries Completed.");
-
-            yield return null;
         }
 
         private IEnumerable<NotesItem> GetNoteItem(NotesDocument doc)
         {
-            UpdateText(lblStatus, "Get Notes Items...");
-
             Array itemArray = (Array)doc.Items;
 
-            UpdateText(lblNotesItemTotal, itemArray.Length.ToString());
-
-            for (int index = 0; index < itemArray.Length; index++)
+            if (itemArray.Length > 0)
             {
-                UpdateText(lblNotesItemCount, (index + 1).ToString());
+                UpdateText(lblStatus, "Get Notes Items...");
 
-                NotesItem item = (NotesItem)itemArray.GetValue(index);
-                yield return item;
+                UpdateText(lblNotesItemTotal, itemArray.Length.ToString());
 
-                //Application.DoEvents();
+                for (int index = 0; index < itemArray.Length; index++)
+                {
+                    UpdateText(lblNotesItemCount, (index + 1).ToString());
+
+                    NotesItem item = (NotesItem)itemArray.GetValue(index);
+                    yield return item;
+
+                    UpdateText(lblStatus, "Get Next Notes Items...");
+
+                    //Application.DoEvents();
+                }
+
+                UpdateText(lblStatus, "Get Notes Items Completed.");
             }
-
-            UpdateText(lblStatus, "Get Notes Items Completed.");
-
-            yield return null;
         }
 
         private void btnOpenNsf_Click(object sender, EventArgs e)
