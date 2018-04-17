@@ -54,6 +54,10 @@
             this.label5 = new System.Windows.Forms.Label();
             this.lblElapsedTime = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.lblOutputTotal = new System.Windows.Forms.Label();
+            this.lblOutputCount = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnSearch
@@ -71,9 +75,9 @@
             this.rtbOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.rtbOutput.Location = new System.Drawing.Point(13, 139);
+            this.rtbOutput.Location = new System.Drawing.Point(13, 165);
             this.rtbOutput.Name = "rtbOutput";
-            this.rtbOutput.Size = new System.Drawing.Size(524, 177);
+            this.rtbOutput.Size = new System.Drawing.Size(524, 207);
             this.rtbOutput.TabIndex = 1;
             this.rtbOutput.Text = "";
             // 
@@ -290,11 +294,51 @@
             this.label6.TabIndex = 23;
             this.label6.Text = "Elapsed Time:";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(122, 138);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(12, 13);
+            this.label1.TabIndex = 28;
+            this.label1.Text = "/";
+            // 
+            // lblOutputTotal
+            // 
+            this.lblOutputTotal.AutoSize = true;
+            this.lblOutputTotal.Location = new System.Drawing.Point(140, 138);
+            this.lblOutputTotal.Name = "lblOutputTotal";
+            this.lblOutputTotal.Size = new System.Drawing.Size(37, 13);
+            this.lblOutputTotal.TabIndex = 27;
+            this.lblOutputTotal.Text = "00000";
+            // 
+            // lblOutputCount
+            // 
+            this.lblOutputCount.AutoSize = true;
+            this.lblOutputCount.Location = new System.Drawing.Point(84, 138);
+            this.lblOutputCount.Name = "lblOutputCount";
+            this.lblOutputCount.Size = new System.Drawing.Size(37, 13);
+            this.lblOutputCount.TabIndex = 26;
+            this.lblOutputCount.Text = "00000";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(14, 138);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(42, 13);
+            this.label12.TabIndex = 25;
+            this.label12.Text = "Output:";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(549, 328);
+            this.ClientSize = new System.Drawing.Size(549, 384);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.lblOutputTotal);
+            this.Controls.Add(this.lblOutputCount);
+            this.Controls.Add(this.label12);
             this.Controls.Add(this.lblElapsedTime);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.lblEndTime);
@@ -356,6 +400,10 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label lblElapsedTime;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblOutputTotal;
+        private System.Windows.Forms.Label lblOutputCount;
+        private System.Windows.Forms.Label label12;
     }
 }
 

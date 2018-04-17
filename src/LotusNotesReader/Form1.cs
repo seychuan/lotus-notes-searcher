@@ -88,24 +88,41 @@ namespace LotusNotesReader
 
                     if (output != null && output.Count > 0)
                     {
+
+                        long index = 1;
+
+                        UpdateText(lblOutputTotal, output.Count.ToString());
+
                         try
                         {
                             AppendText(rtbOutput, $">>> {view.Name} ({output.Count}) <<<" + Environment.NewLine + Environment.NewLine);
 
-                            using (StreamWriter sw = new StreamWriter(string.Format(path, view.Name)))
+                            var logPath = string.Format(path, view.Name);
+
+                            using (StreamWriter sw = new StreamWriter(logPath))
                             {
                                 foreach (string value in output.Values)
                                 {
+                                    UpdateText(lblOutputCount, index.ToString());
+
                                     if (string.IsNullOrEmpty(value) == false && value.Trim().Length > 0)
                                     {
                                         sw.WriteLine(value + Environment.NewLine + Environment.NewLine);
 
-                                        AppendText(rtbOutput, value + Environment.NewLine + Environment.NewLine);
+                                        // Don't display live because string concatenation too slow
+                                        //AppendText(rtbOutput, value + Environment.NewLine + Environment.NewLine);
                                         //Application.DoEvents();
                                     }
+
+                                    index++;
                                 }
 
                                 sw.Close();
+
+                                if (File.Exists(logPath))
+                                {
+                                    rtbOutput.LoadFile(logPath, RichTextBoxStreamType.PlainText);
+                                }
                             }
                         }
                         catch (Exception ex)
